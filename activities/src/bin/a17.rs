@@ -12,4 +12,9 @@
 //   to uppercase and lowercase
 //   * Try searching for: to_uppercase, to_lowercase
 
-fn main() {}
+fn main() {
+    let x = "Gasbag".to_owned();
+
+    println!("{:?}", (&x).to_uppercase());
+    println!("{:?}", x.to_lowercase());
+}
