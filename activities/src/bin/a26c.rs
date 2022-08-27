@@ -32,22 +32,15 @@ fn exciting(msg: &str) -> String {
     format!("{}!", msg)
 }
 
-fn add(lhs: isize, rhs: isize) -> isize {
-    lhs + rhs
-}
-fn sub(lhs: isize, rhs: isize) -> isize {
-    lhs - rhs
-}
-fn mul(lhs: isize, rhs: isize) -> isize {
-    lhs * rhs
-}
+use my_math_lib::math::basic_math;
 
 fn main() {
+
     // Part 1: math functions
     let result = {
-        let two_plus_two = add(2, 2);
-        let three = sub(two_plus_two, 1);
-        mul(three, three)
+        let two_plus_two = basic_math::add(2, 2);
+        let three = basic_math::sub(two_plus_two, 1);
+        basic_math::mul(three, three)
     };
 
     // Ensure we have a correct result.

@@ -13,7 +13,7 @@ fn main() {
         .iter()
         .map(|x| x * 3)
         // .filter(|x| x>&10)
-        .filter(|x| *(x)>10)
+        .filter(|x| *(x) > 10)
         .collect();
 
     for x in data {
