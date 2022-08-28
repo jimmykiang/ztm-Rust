@@ -35,7 +35,6 @@ fn exciting(msg: &str) -> String {
 use my_math_lib::math::basic_math;
 
 fn main() {
-
     // Part 1: math functions
     let result = {
         let two_plus_two = basic_math::add(2, 2);
