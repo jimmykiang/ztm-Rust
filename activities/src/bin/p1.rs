@@ -29,4 +29,54 @@
 // * A vector is the easiest way to store the bills at stage 1, but a
 //   hashmap will be easier to work with at stages 2 and 3.
 
-fn main() {}
+enum MainMenu {
+    AddBill,
+    ViewBill,
+    DeleteBill,
+    UpdateBill,
+}
+
+impl MainMenu {
+    fn show() {
+        println!("");
+        println!("Select from the options below:");
+        println!("1- Add Bill.");
+        println!("2- View Bill.");
+        println!("3- Delete Bill.");
+        println!("4- Update Bill.");
+        println!("");
+    }
+}
+
+struct Bill {
+    name: String,
+    amount: f64,
+}
+
+use std::collections::HashMap;
+
+struct Bills {
+    bills: HashMap<String, Bill>,
+}
+
+impl Bills {
+    fn new() -> Self {
+        Self {
+            bills: HashMap::new(),
+        }
+    }
+
+    fn add_bill(&mut self, bill: Bill) {
+        // clone the name field from bill, otherwise the name field would be
+        // moved out from the bill.name field and into the key of the hashMap.
+        self.bills.insert(bill.name.clone(), bill);
+    }
+}
+
+fn main_menu_loop() {
+    MainMenu::show();
+}
+
+fn main() {
+    main_menu_loop();
+}
