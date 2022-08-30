@@ -48,6 +48,7 @@ impl MainMenu {
     }
 }
 
+#[derive(Debug, Clone)]
 struct Bill {
     name: String,
     amount: f64,
@@ -55,7 +56,7 @@ struct Bill {
 
 use std::collections::HashMap;
 
-struct Bills {
+pub struct Bills {
     bills: HashMap<String, Bill>,
 }
 
@@ -73,8 +74,74 @@ impl Bills {
     }
 }
 
+mod menu {
+    use crate::{Bill, Bills};
+
+    pub fn add_bill(bills: &mut Bills) {
+        println!("Enter name of the bill:");
+        let bill_name = match get_input() {
+            Some(x) => x,
+            None => return,
+        };
+
+        let bill_amount = match get_bill_amount_input() {
+            Some(x) => x,
+            None => return,
+        };
+
+        let bill = Bill {
+            name: bill_name,
+            amount: bill_amount,
+        };
+
+        // Clone to not make the bill struct get lost in the move to println!.
+        println!("Bill: {:?}", bill.clone());
+
+        bills.add_bill(bill);
+        println!("Bill inserted.");
+    }
+
+    fn get_input() -> Option<String> {
+        use std::io;
+        let mut buffer = String::new();
+        loop {
+            let input_result = io::stdin().read_line(&mut buffer);
+            match input_result {
+                Ok(_) => {
+                    let input_string = buffer.trim().to_owned();
+                    return if input_string == "" {
+                        None
+                    } else {
+                        Some(input_string)
+                    };
+                }
+                Err(e) => println!("{:?}", e),
+            }
+        }
+    }
+
+    fn get_bill_amount_input() -> Option<f64> {
+        loop {
+            println!("Enter amount:");
+            let bill_amount_input = match get_input() {
+                Some(x) => x,
+                None => continue,
+            };
+
+            use std::num::ParseFloatError;
+            let parsed_result: Result<f64, ParseFloatError> = bill_amount_input.parse();
+            match parsed_result {
+                Ok(x) => return Some(x),
+                Err(e) => println!("Bill amount error: {:?}", e),
+            }
+        }
+    }
+}
+
 fn main_menu_loop() {
+    let mut bills = Bills::new();
     MainMenu::show();
+    menu::add_bill(&mut bills);
 }
 
 fn main() {
