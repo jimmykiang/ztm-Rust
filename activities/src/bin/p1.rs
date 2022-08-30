@@ -72,6 +72,10 @@ impl Bills {
         // moved out from the bill.name field and into the key of the hashMap.
         self.bills.insert(bill.name.clone(), bill);
     }
+
+    fn get_all_bill(&self) -> Vec<&Bill> {
+        self.bills.values().collect()
+    }
 }
 
 mod menu {
@@ -99,6 +103,12 @@ mod menu {
 
         bills.add_bill(bill);
         println!("Bill inserted.");
+    }
+
+    pub fn get_bills(bills: &Bills) {
+        for x in bills.get_all_bill() {
+            println!("{:?}", x);
+        }
     }
 
     fn get_input() -> Option<String> {
@@ -142,6 +152,7 @@ fn main_menu_loop() {
     let mut bills = Bills::new();
     MainMenu::show();
     menu::add_bill(&mut bills);
+    menu::get_bills(&bills);
 }
 
 fn main() {
