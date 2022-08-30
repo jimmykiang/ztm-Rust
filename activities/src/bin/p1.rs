@@ -46,6 +46,14 @@ impl MainMenu {
         println!("4- Update Bill.");
         println!("");
     }
+
+    fn menu_option(x: &str) -> Option<MainMenu> {
+        match x {
+            "1" => Some(MainMenu::AddBill),
+            "2" => Some(MainMenu::ViewBill),
+            _ => None,
+        }
+    }
 }
 
 #[derive(Debug, Clone)]
@@ -82,27 +90,30 @@ mod menu {
     use crate::{Bill, Bills};
 
     pub fn add_bill(bills: &mut Bills) {
-        println!("Enter name of the bill:");
-        let bill_name = match get_input() {
-            Some(x) => x,
-            None => return,
-        };
+        loop {
+            println!("Enter name of the bill:");
+            let bill_name = match get_input() {
+                Some(x) => x,
+                None => continue,
+            };
 
-        let bill_amount = match get_bill_amount_input() {
-            Some(x) => x,
-            None => return,
-        };
+            let bill_amount = match get_bill_amount_input() {
+                Some(x) => x,
+                None => continue,
+            };
 
-        let bill = Bill {
-            name: bill_name,
-            amount: bill_amount,
-        };
+            let bill = Bill {
+                name: bill_name,
+                amount: bill_amount,
+            };
 
-        // Clone to not make the bill struct get lost in the move to println!.
-        println!("Bill: {:?}", bill.clone());
+            // Clone to not make the bill struct get lost in the move to println!.
+            println!("Bill: {:?}", bill.clone());
 
-        bills.add_bill(bill);
-        println!("Bill inserted.");
+            bills.add_bill(bill);
+            println!("Bill inserted.");
+            break;
+        }
     }
 
     pub fn get_bills(bills: &Bills) {
@@ -111,7 +122,7 @@ mod menu {
         }
     }
 
-    fn get_input() -> Option<String> {
+    pub fn get_input() -> Option<String> {
         use std::io;
         let mut buffer = String::new();
         loop {
@@ -150,9 +161,22 @@ mod menu {
 
 fn main_menu_loop() {
     let mut bills = Bills::new();
-    MainMenu::show();
-    menu::add_bill(&mut bills);
-    menu::get_bills(&bills);
+
+    loop {
+        MainMenu::show();
+        let menu_input = menu::get_input();
+        let menu_option = match menu_input {
+            Some(x) => x,
+            None => break,
+        };
+        match MainMenu::menu_option(&menu_option) {
+            Some(MainMenu::AddBill) => menu::add_bill(&mut bills),
+            Some(MainMenu::ViewBill) => menu::get_bills(&bills),
+            Some(MainMenu::UpdateBill) => (),
+            Some(MainMenu::DeleteBill) => (),
+            None => break,
+        }
+    }
 }
 
 fn main() {
