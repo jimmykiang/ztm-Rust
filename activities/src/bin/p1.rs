@@ -51,6 +51,7 @@ impl MainMenu {
         match x {
             "1" => Some(MainMenu::AddBill),
             "2" => Some(MainMenu::ViewBill),
+            "3" => Some(MainMenu::DeleteBill),
             _ => None,
         }
     }
@@ -83,6 +84,10 @@ impl Bills {
 
     fn get_all_bill(&self) -> Vec<&Bill> {
         self.bills.values().collect()
+    }
+
+    fn remove_bill(&mut self, name: &str) -> bool {
+        self.bills.remove(name).is_some()
     }
 }
 
@@ -119,6 +124,23 @@ mod menu {
     pub fn get_bills(bills: &Bills) {
         for x in bills.get_all_bill() {
             println!("{:?}", x);
+        }
+    }
+
+    pub fn delete_bill(bills: &mut Bills) {
+        loop {
+            println!("Enter bill name to be removed:");
+            let bill_name = match get_input() {
+                Some(x) => x,
+                None => continue,
+            };
+
+            if bills.remove_bill(&bill_name) {
+                println!("Entry deleted.");
+            } else {
+                println!("Not Found.");
+            }
+            break;
         }
     }
 
@@ -173,7 +195,7 @@ fn main_menu_loop() {
             Some(MainMenu::AddBill) => menu::add_bill(&mut bills),
             Some(MainMenu::ViewBill) => menu::get_bills(&bills),
             Some(MainMenu::UpdateBill) => (),
-            Some(MainMenu::DeleteBill) => (),
+            Some(MainMenu::DeleteBill) => (menu::delete_bill(&mut bills)),
             None => break,
         }
     }
