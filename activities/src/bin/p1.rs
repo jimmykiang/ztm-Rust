@@ -52,6 +52,7 @@ impl MainMenu {
             "1" => Some(MainMenu::AddBill),
             "2" => Some(MainMenu::ViewBill),
             "3" => Some(MainMenu::DeleteBill),
+            "4" => Some(MainMenu::UpdateBill),
             _ => None,
         }
     }
@@ -84,6 +85,20 @@ impl Bills {
 
     fn get_all_bill(&self) -> Vec<&Bill> {
         self.bills.values().collect()
+    }
+
+    fn contains_bill(&self, name: &str) -> bool {
+        self.bills.contains_key(name)
+    }
+
+    fn update(&mut self, name: &str, amount: f64) -> bool {
+        match self.bills.get_mut(name) {
+            Some(x) => {
+                x.amount = amount;
+                true
+            }
+            None => false,
+        }
     }
 
     fn remove_bill(&mut self, name: &str) -> bool {
@@ -124,6 +139,34 @@ mod menu {
     pub fn get_bills(bills: &Bills) {
         for x in bills.get_all_bill() {
             println!("{:?}", x);
+        }
+    }
+
+    pub fn update_bill(bills: &mut Bills) {
+        loop {
+            println!("Enter bill name to be updated:");
+
+            let name = match get_input() {
+                Some(x) => x,
+                None => continue,
+            };
+
+            if !bills.contains_bill(&name) {
+                println!("Not found.");
+                break;
+            }
+
+            let amount = match get_bill_amount_input() {
+                Some(x) => x,
+                None => continue,
+            };
+
+            if bills.update(&name, amount) {
+                println!("Entry updated");
+            } else {
+                println!("Not found.");
+            }
+            break;
         }
     }
 
@@ -194,8 +237,8 @@ fn main_menu_loop() {
         match MainMenu::menu_option(&menu_option) {
             Some(MainMenu::AddBill) => menu::add_bill(&mut bills),
             Some(MainMenu::ViewBill) => menu::get_bills(&bills),
-            Some(MainMenu::UpdateBill) => (),
-            Some(MainMenu::DeleteBill) => (menu::delete_bill(&mut bills)),
+            Some(MainMenu::UpdateBill) => menu::update_bill(&mut bills),
+            Some(MainMenu::DeleteBill) => menu::delete_bill(&mut bills),
             None => break,
         }
     }
