@@ -38,7 +38,11 @@ impl Perimeter for Triangle {
     }
 }
 
-fn print_perimeter(shape: impl Perimeter) {
+// fn print_perimeter(shape: impl Perimeter) {
+fn print_perimeter<T>(shape: T)
+where
+    T: Perimeter,
+{
     let perimeter = shape.perimeter_calc();
     println!("Perimeter: {:?}", perimeter);
 }
