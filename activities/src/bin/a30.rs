@@ -18,4 +18,49 @@
 trait Body {}
 trait Color {}
 
-fn main() {}
+#[derive(Debug)]
+struct Vehicle<T, U>
+where
+    T: Body,
+    U: Color,
+{
+    body: T,
+    color: U,
+}
+
+impl<T, U> Vehicle<T, U>
+where
+    T: Body,
+    U: Color,
+{
+    fn new(body: T, color: U) -> Self {
+        Self { body, color }
+    }
+}
+
+#[derive(Debug)]
+struct Car {}
+
+impl Body for Car {}
+
+struct Truck {}
+
+impl Body for Truck {}
+
+struct Red {}
+
+impl Color for Red {}
+
+#[derive(Debug)]
+struct White {}
+
+impl Color for White {}
+
+fn main() {
+    let white_color = White {};
+    let car = Car {};
+
+    let white_car = Vehicle::new(car, white_color);
+
+    println!("{:?}", white_car);
+}
