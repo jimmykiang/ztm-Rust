@@ -25,7 +25,12 @@ fn zip_in<'a>(data: &Vec<&'a str>, names: &mut Names<'a>, titles: &mut Titles<'a
 
     titles.titles_vector = data.iter().filter_map(|x| x.split(',').nth(4)).collect();
 
-    for (name, title) in names.names_vector.iter().zip(titles.titles_vector.iter()) {
+    for (name, title) in names
+        .names_vector
+        .iter()
+        .zip(titles.titles_vector.iter())
+        .take(5)
+    {
         println!("Name: {:?}, Title: {:?}", name, title.trim());
     }
 }
