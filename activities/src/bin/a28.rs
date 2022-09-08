@@ -40,7 +40,7 @@ impl ShirtColor {
     }
 }
 
-#[derive(Debug)]
+// #[derive(Debug)]
 struct PantsColor(Color);
 impl PantsColor {
     fn new(color: Color) -> Self {
@@ -57,7 +57,7 @@ fn print_shirt_color(x: ShirtColor) {
 }
 
 fn print_pants_color(x: PantsColor) {
-    println!("Pants color: {:?}", x);
+    println!("Pants color: {:?}", x.0);
 }
 
 fn main() {
@@ -66,6 +66,4 @@ fn main() {
 
     print_shoes_color(shoes_color);
     print_pants_color(pants_color);
-
-
 }
