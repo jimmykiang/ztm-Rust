@@ -21,7 +21,7 @@
 // * Use a single match expression utilizing guards to implement the program
 // * Run the program and print the messages with at least 4 different tiles
 
-#[derive(Debug)]
+#[derive(Debug, PartialEq)]
 enum TreasureItem {
     Gold,
     SuperPower,
@@ -54,4 +54,50 @@ enum Tile {
     Wood,
 }
 
-fn main() {}
+fn print_tile(tile: Tile) {
+    match tile {
+        Tile::Brick(x @ BrickStyle::Gray | x @ BrickStyle::Red) => {
+            println!("The brick color is: {:?}", x)
+        }
+        Tile::Water(x) if x.0 >= 10 => {
+            println!("High water pressure: {:?}", x)
+        }
+        Tile::Water(x) if x.0 < 10 => {
+            println!("Normal water pressure: {:?}", x)
+        }
+        Tile::Treasure(TreasureChest { content, amount })
+            if (content == TreasureItem::Gold) & (amount >= 100) =>
+        {
+            println!("Lots of {:?}: {:?}!", content, amount)
+        }
+        x @ Tile::Grass | x @ Tile::Dirt | x @ Tile::Sand => println!("Ground tile: {:?}", x),
+
+        _ => {}
+    }
+}
+
+fn main() {
+    let tile = Tile::Brick(BrickStyle::Gray);
+    print_tile(tile);
+
+    let tile = Tile::Water(Pressure(11));
+    print_tile(tile);
+
+    let tile = Tile::Water(Pressure(8));
+    print_tile(tile);
+
+    let tile = Tile::Treasure(TreasureChest {
+        amount: 110,
+        content: TreasureItem::Gold,
+    });
+    print_tile(tile);
+
+    let tile = Tile::Treasure(TreasureChest {
+        amount: 110,
+        content: TreasureItem::SuperPower,
+    });
+    print_tile(tile);
+
+    let tile = Tile::Dirt;
+    print_tile(tile);
+}
