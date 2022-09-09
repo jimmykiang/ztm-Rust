@@ -33,7 +33,7 @@ struct EndCustody;
 impl Luggage<BeginCustody> {
     fn new(id: LuggageId) -> Self {
         Self {
-            id,
+            id: id,
             state: BeginCustody {},
         }
     }
