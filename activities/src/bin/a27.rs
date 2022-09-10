@@ -49,11 +49,24 @@ fn divide(a: i32, b: i32) -> Result<i32, MathError> {
     }
 }
 
+// fn run(step: i32) -> Result<(), ProgramError> {
+//     if step == 1 {
+//         pick_menu("4")?;
+//     } else if step == 2 {
+//         divide(1, 0)?;
+//     }
+//     Ok(())
+// }
+
 fn run(step: i32) -> Result<(), ProgramError> {
     if step == 1 {
         pick_menu("4")?;
     } else if step == 2 {
-        divide(1, 0)?;
+        // divide(1, 0)?;
+        match divide(1, 0) {
+            Ok(e) => return Ok(()),
+            Err(e) => return Err(ProgramError::MathErr(MathError::DivideByZero)),
+        };
     }
     Ok(())
 }
