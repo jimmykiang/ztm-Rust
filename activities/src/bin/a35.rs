@@ -65,10 +65,12 @@ fn print_tile(tile: Tile) {
         Tile::Water(x) if x.0 < 10 => {
             println!("Normal water pressure: {:?}", x)
         }
-        Tile::Treasure(x @ TreasureChest {
-            content: TreasureItem::Gold,
-            amount,
-        }) if (x.amount >= 100) => {
+        Tile::Treasure(
+            x @ TreasureChest {
+                content: TreasureItem::Gold,
+                amount,
+            },
+        ) if (x.amount >= 100) => {
             println!("Lots of {:?}: {:?}!", x.content, x.amount)
         }
         x @ Tile::Grass | x @ Tile::Dirt | x @ Tile::Sand => println!("Ground tile: {:?}", x),

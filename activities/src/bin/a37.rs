@@ -25,6 +25,41 @@
 #[derive(Debug, Eq, PartialEq)]
 struct Rgb(u8, u8, u8);
 
+use std::convert::TryFrom;
+
+impl TryFrom<&str> for Rgb {
+    type Error = RGBError;
+    fn try_from(x: &str) -> Result<Self, Self::Error> {
+        if x.len() != 7 {
+            // return Err(RGBError::MissingColorComponent);
+            return Err(Self::Error::MissingColorComponent);
+        }
+
+        let (r, g, b) = (
+            u8::from_str_radix(&x[1..=2], 16)?,
+            u8::from_str_radix(&x[3..=4], 16)?,
+            u8::from_str_radix(&x[5..=6], 16)?,
+        );
+
+        Ok(Self(r, g, b))
+    }
+}
+
+use thiserror::Error;
+#[derive(Debug, Error)]
+enum RGBError {
+    #[error("Error to parse hex digit: {0}")]
+    ParseError(std::num::ParseIntError),
+    #[error("Missing Color Component.")]
+    MissingColorComponent,
+}
+
+impl From<std::num::ParseIntError> for RGBError {
+    fn from(e: std::num::ParseIntError) -> Self {
+        Self::ParseError(e)
+    }
+}
+
 fn main() {
     // Use `cargo test --bin a37` to test your implementation
 }
