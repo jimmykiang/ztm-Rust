@@ -21,13 +21,15 @@
 //   by telling the thread to self-terminate
 // * Use `cargo test --bin a39` to test your program to ensure all cases are covered
 
-use crossbeam_channel::{unbounded, Receiver};
+use colored::*;
+use crossbeam::crossbeam_channel::{unbounded, Receiver};
 use std::thread::{self, JoinHandle};
 
 enum LightMsg {
     // Add additional variants needed to complete the exercise
     ChangeColor(u8, u8, u8),
     Disconnect,
+    On,
 }
 
 enum LightStatus {
@@ -37,14 +39,53 @@ enum LightStatus {
 
 fn spawn_light_thread(receiver: Receiver<LightMsg>) -> JoinHandle<LightStatus> {
     // Add code here to spawn a thread to control the light bulb
+    thread::spawn(move || {
+        let mut light_status = LightStatus::Off;
+        for x in receiver {
+            match x {
+                LightMsg::Disconnect => {
+                    light_status = LightStatus::Off;
+                    println!("{}", "Light disconnected.".blue().bold());
+                    break;
+                }
+                LightMsg::On => {
+                    light_status = LightStatus::On;
+                    println!("{}", "Lights On.".yellow().bold());
+                }
+                LightMsg::ChangeColor(r, g, b) => {
+                    println!(
+                        "Light color changed to: {}",
+                        "        ".on_truecolor(r, g, b)
+                    );
+                    match light_status {
+                        LightStatus::On => println!("{}", "Lights On.".yellow().bold()),
+                        LightStatus::Off => println!("{}", "Lights Off.".purple().bold()),
+                    }
+                }
+                _ => (),
+            }
+        }
+        light_status
+    })
 }
 
-fn main() {}
+fn main() {
+    let (s, r) = unbounded();
+    let light = spawn_light_thread(r);
+
+    s.send(LightMsg::On);
+    s.send(LightMsg::ChangeColor(0, 128, 0));
+    s.send(LightMsg::ChangeColor(0, 128, 255));
+    s.send(LightMsg::Disconnect);
+    let light_status = light.join();
+
+    println!("Main exited.");
+}
 
 #[cfg(test)]
 mod test {
     use super::*;
-    use crossbeam_channel::unbounded;
+    use crossbeam::crossbeam_channel::unbounded;
 
     #[test]
     fn light_off_when_disconnect() {
