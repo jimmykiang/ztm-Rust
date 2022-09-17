@@ -17,10 +17,13 @@
 //   - crossbeam-channel
 //   - parking_lot
 
-use crossbeam_channel::{unbounded, Receiver, Sender};
+use crossbeam::crossbeam_channel::{unbounded, Receiver, Sender};
 use std::collections::VecDeque;
 use std::thread::{self, JoinHandle};
 use std::time::Duration;
+
+use parking_lot::Mutex;
+use std::sync::Arc;
 
 /// Job given to workers.
 #[derive(Clone)]
@@ -57,7 +60,7 @@ impl Worker<Message> {
 }
 
 /// Create a new worker to receive jobs.
-fn spawn_worker() -> Worker<Message> {
+fn spawn_worker(counter: Arc<Mutex<usize>>) -> Worker<Message> {
     let (tx, rx) = unbounded();
     // We clone the receiving end here so we have a copy to give to the
     // thread. This allows us to save the `tx` and `rx` into the Worker struct.
@@ -78,6 +81,8 @@ fn spawn_worker() -> Worker<Message> {
                         Job::Print(msg) => println!("{}", msg),
                         Job::Sum(lhs, rhs) => println!("{}+{}={}", lhs, rhs, lhs + rhs),
                     }
+                    let mut counter = counter.lock();
+                    *counter += 1;
                 }
                 // Check for messages on the channel.
                 if let Ok(msg) = rx_thread.try_recv() {
@@ -131,10 +136,14 @@ fn main() {
 
     let jobs_sent = jobs.len();
 
+    let usize = 0;
+
+    let global_complete_job_counter = Arc::new(Mutex::new(usize));
+
     let mut workers = vec![];
     // Spawn 4 workers to process jobs.
     for _ in 0..4 {
-        let worker = spawn_worker();
+        let worker = spawn_worker(global_complete_job_counter.clone());
         workers.push(worker);
     }
 
@@ -160,4 +169,9 @@ fn main() {
     println!("Jobs sent: {}", jobs_sent);
 
     // print out the number of jobs completed here.
+
+    println!(
+        "Global counter for jobs completed: {:?}",
+        global_complete_job_counter.lock()
+    );
 }
